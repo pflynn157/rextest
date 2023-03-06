@@ -16,10 +16,14 @@ for folder in base_folders:
     items.append((folder + " (OpenMP (AVX-512))",     "./build/" + folder + "2", []))
     items.append((folder + " (OpenMP w/Unroll (AVX-2))", "./build/" + folder + "u1", []))
     items.append((folder + " (OpenMP w/Unroll (AVX-512))", "./build/" + folder + "u2", []))
+    items.append((folder + " (OpenMP w/Tile (AVX-2))", "./build/" + folder + "t1", []))
+    items.append((folder + " (OpenMP w/Tile (AVX-512))", "./build/" + folder + "t2", []))
     items.append((folder + " (Rex (AVX-2))",        "./build/" + folder + "_rex_avx2", []))
     items.append((folder + " (Rex (AVX-512))",        "./build/" + folder + "_rex_avx512", []))
     items.append((folder + " (Rex w/Unroll (AVX-2))", "./build/" + folder + "_rex_avx2_unroll", []))
     items.append((folder + " (Rex w/Unroll (AVX-512))", "./build/" + folder + "_rex_avx512_unroll", []))
+    items.append((folder + " (Rex w/Tile (AVX-2))", "./build/" + folder + "_rex_avx2_tile", []))
+    items.append((folder + " (Rex w/Tile (AVX-512))", "./build/" + folder + "_rex_avx512_tile", []))
     folders.append((folder, items))
 
 '''
