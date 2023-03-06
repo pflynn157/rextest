@@ -10,7 +10,7 @@ rose = "/home/pflynn5/passlab/rex_build/bin/rose-compiler"
 
 serial_flags = ["-O0", "-lm"]
 avx2_flags = ["-O2", "-lm", "-march=native"]
-avx512_flags = ["-O2", "-lm", "-march=knl"]
+avx512_flags = ["-O2", "-lm", "-march=knl", "-mavx512dq"]
 rose_flags1 = ["-rose:openmp:lowering", "-rose:skipfinalCompileStep", "-rose:simd:intel-avx"]
 
 base_folders = [ "axpy", "sum", "matmul", "matvec", "spmv" ]
