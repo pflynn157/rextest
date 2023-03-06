@@ -3,7 +3,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <malloc.h>
-#include <math.h>
+//#include <math.h>
 
 #define N_RUNS 20
 #define N 10240
