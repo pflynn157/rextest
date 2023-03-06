@@ -1,4 +1,4 @@
-//axpy.c
+//sum.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -6,7 +6,7 @@
 #include <malloc.h>
 
 #define N_RUNS 20
-#define N 102400000
+#define N 10240000
 
 // read timer in second
 double read_timer() {
@@ -16,59 +16,54 @@ double read_timer() {
 }
 
 //Create a matrix and a vector and fill with random numbers
-void init(float *X, float *Y) {
+void init(float *X) {
     for (int i = 0; i<N; i++) {
         X[i] = (float)rand()/(float)(RAND_MAX/10.0);
-        Y[i] = (float)rand()/(float)(RAND_MAX/10.0);
     }
 }
 
 //Our sum function- what it does is pretty straight-forward.
-void axpy(float *X, float *Y, float a) {
-    #pragma omp parallel for
+float sum(float *X) {
+    float result = 0;
+    
+    #pragma omp unroll partial(4)
+    #pragma omp simd reduction(+:result)
     for (int i = 0; i<N; i++) {
-        Y[i] += a * X[i];
+        result += X[i];
     }
+    
+    return result;
 }
 
 // Debug functions
-void axpy_serial(float *X, float *Y, float a) {
+float sum_serial(float *X) {
+    float result = 0;
+    
     for (int i = 0; i<N; i++) {
-        Y[i] += a * X[i];
+        result += X[i];
     }
-}
-
-float check(float *A, float *B){
-    float difference = 0;
-    for(int i = 0;i<N; i++){
-        difference += A[i]- B[i];
-    }
-    return difference;
+    
+    return result;
 }
 
 int main(int argc, char **argv) {
     //Set everything up
     float *X = malloc(sizeof(float)*N);
-    float *Y = malloc(sizeof(float)*N);
-    float *Y_serial = malloc(sizeof(float)*N);
-    float a = 3.14;
+    float result, result_serial;
     
     srand(time(NULL));
-    init(X, Y);
-    for (int i = 0; i<N; i++) Y_serial[i] = Y[i];
+    init(X);
     
     //warming up
-    axpy(X, Y, a);
-    axpy_serial(X, Y_serial, a);
-    init(X, Y);
-    for (int i = 0; i<N; i++) Y_serial[i] = Y[i];
+    result = sum(X);
+    result_serial = sum_serial(X);
     
     double t = 0;
     double start = read_timer();
     for (int i = 0; i<N_RUNS; i++) {
         fprintf(stderr, "%d ", i);
-        axpy(X, Y, a);
-        fprintf(stderr, "(%f,%f,%f)", Y[0], Y[N-10], Y[N/10]);
+        result = sum(X);
+        fprintf(stderr, "(%f)", result);
     }
     fprintf(stderr, "\n");
     t += (read_timer() - start);
@@ -76,7 +71,7 @@ int main(int argc, char **argv) {
     double t_serial = 0;
     double start_serial = read_timer();
     for (int i = 0; i<N_RUNS; i++)
-        axpy_serial(X, Y_serial, a);
+        result_serial = sum_serial(X);
     t_serial += (read_timer() - start_serial);
     
     double gflops = ((2.0 * N) * N * N_RUNS) / (1.0e9 * t);
@@ -85,14 +80,12 @@ int main(int argc, char **argv) {
     /*printf("==================================================================\n");
     printf("Performance:\t\t\tRuntime (s)\t GFLOPS\n");
     printf("------------------------------------------------------------------\n");
-    printf("AXPY (SIMD):\t\t%4f\t%4f\n", t/N_RUNS, gflops);
-    printf("AXPY (Serial):\t\t%4f\t%4f\n", t_serial/N_RUNS, gflops_serial);
-    printf("Correctness check: %f\n", check(Y,Y_serial));*/
-    printf("%4f,%f\n", t/N_RUNS, check(Y,Y_serial));
+    printf("Sum (SIMD):\t\t%4f\t%4f\n", t/N_RUNS, gflops);
+    printf("Sum (Serial):\t\t%4f\t%4f\n", t_serial/N_RUNS, gflops_serial);
+    printf("Correctness check: %f\n", result_serial - result);*/
+    printf("%4f", t/N_RUNS);
     
     free(X);
-    free(Y);
-    free(Y_serial);
     
     return 0;    
 }

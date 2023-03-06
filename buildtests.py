@@ -29,14 +29,19 @@ for f in base_folders:
     # The OpenMP programs
     items.append((f + "_float.c", f + "1", "clang", avx2_flags))
     items.append((f + "_float.c", f + "2", "clang", avx512_flags))
+    items.append((f + "_float_unroll.c", f + "u1", "clang", avx2_flags))
+    items.append((f + "_float_unroll.c", f + "u2", "clang", avx512_flags))
     
     # Build the Rose programs
     items.append((f + "_float.c", None, rose, rose_flags1))
+    items.append((f + "_float_unroll.c", None, rose, rose_flags1))
     
     # Compile the Rose programs
     items.append(("rose_" + f + "_float.c", f + "_rex_avx2", "clang", avx2_flags))
     items.append(("rose_" + f + "_float.c", f + "_rex_avx512", "clang", avx512_flags))
-    
+    items.append(("rose_" + f + "_float_unroll.c", f + "_rex_avx2_unroll", "clang", avx2_flags))
+    items.append(("rose_" + f + "_float_unroll.c", f + "_rex_avx512_unroll", "clang", avx512_flags))
+
     # Add
     folders.append((f, items))
 

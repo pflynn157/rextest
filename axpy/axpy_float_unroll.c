@@ -25,7 +25,8 @@ void init(float *X, float *Y) {
 
 //Our sum function- what it does is pretty straight-forward.
 void axpy(float *X, float *Y, float a) {
-    #pragma omp parallel for simd
+    #pragma omp unroll partial(4)
+    #pragma omp simd
     for (int i = 0; i<N; i++) {
         Y[i] += a * X[i];
     }
@@ -88,7 +89,7 @@ int main(int argc, char **argv) {
     printf("AXPY (SIMD):\t\t%4f\t%4f\n", t/N_RUNS, gflops);
     printf("AXPY (Serial):\t\t%4f\t%4f\n", t_serial/N_RUNS, gflops_serial);
     printf("Correctness check: %f\n", check(Y,Y_serial));*/
-    printf("%4f,%f\n", t/N_RUNS, check(Y,Y_serial));
+    printf("%4f", t/N_RUNS);
     
     free(X);
     free(Y);
