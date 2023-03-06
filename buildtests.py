@@ -4,7 +4,9 @@ from subprocess import Popen, PIPE
 import os
 import os.path
 
-rose = "/home/patrick/passlab/build/bin/rose-compiler"
+#rose = "/home/patrick/passlab/build/bin/rose-compiler"
+#rose = "/opt/rex_install/bin/rose-compiler"
+rose = "/home/pflynn5/passlab/rex_build/bin/rose-compiler"
 
 serial_flags = ["-O0", "-lm"]
 avx2_flags = ["-O2", "-lm", "-march=native"]

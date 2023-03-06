@@ -40,7 +40,8 @@ folders = [
 '''
 
 output_file = "results.csv"
-max_count = 10
+#max_count = 10
+max_count = 5
 
 for folder in folders:
     os.chdir(folder[0])
