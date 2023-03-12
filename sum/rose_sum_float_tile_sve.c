@@ -5,7 +5,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <malloc.h>
-#include <immintrin.h> 
+#include <arm_sve.h> 
 #define N_RUNS 20
 #define N 10240000
 // read timer in second
@@ -28,22 +28,18 @@ void init(float *X)
 
 float sum(float *X)
 {
-  __m512 __part0 = _mm512_setzero_ps();
+  svfloat32_t __part0 = svdup_f32(0.00000L);
   int i;
   float result = 0;
-  for (i = _lt_var_i; i <= (((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1))); i += 1 * 16) {
-    __m512 __vec1 = _mm512_loadu_ps(&X[i]);
-    __m512 __vec2 = _mm512_add_ps(__vec1,__part0);
+  svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1)));
+  for (i = _lt_var_i; i <= (((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1))); i += 1 * svcntw()) {
+    svfloat32_t __vec1 = svld1(__pg0,&X[i]);
+    svfloat32_t __vec2 = svadd_f32_m(__pg0,__vec1,__part0);
     __part0 = (__vec2);
+    __pg0 = svwhilelt_b32((unsigned long )i,(unsigned long )(((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1))));
   }
-  __m256 __buf0 = _mm512_extractf32x8_ps(__part0,0);
-  __m256 __buf1 = _mm512_extractf32x8_ps(__part0,1);
-  __buf1 = _mm256_add_ps(__buf0,__buf1);
-  __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-  __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-  float __buf2[8];
-  _mm256_storeu_ps(&__buf2,__buf1);
-  result += __buf2[0] + __buf2[6];
+  __pg0 = svptrue_b32();
+  result += svaddv(__pg0,__part0);
   return result;
 }
 // Debug functions

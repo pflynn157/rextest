@@ -5,7 +5,6 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <malloc.h>
-#include <immintrin.h> 
 #define N_RUNS 20
 #define N 102400000
 // read timer in second
@@ -29,14 +28,20 @@ void init(float *X,float *Y)
 
 void axpy(float *X,float *Y,float a)
 {
-  __m512 __vec1 = _mm512_set1_ps(a);
   int i;
-  for (i = _lt_var_i; i <= (((102399999 < (_lt_var_i + 2 - 1))?102399999 : (_lt_var_i + 2 - 1))); i += 1 * 16) {
-    __m512 __vec0 = _mm512_loadu_ps(&Y[i]);
-    __m512 __vec2 = _mm512_loadu_ps(&X[i]);
-    __m512 __vec3 = _mm512_mul_ps(__vec2,__vec1);
-    __m512 __vec4 = _mm512_add_ps(__vec3,__vec0);
-    _mm512_storeu_ps(&Y[i],__vec4);
+  for (_lt_var_i = 0; _lt_var_i <= 102399999; _lt_var_i += 8) {
+    for (i = _lt_var_i; i <= (((102399999 < (_lt_var_i + 2 - 1))?102399999 : (_lt_var_i + 2 - 1))); i += 4) {
+      Y[i] += a * X[i];
+{
+        Y[i + 1] += a * X[i + 1];
+      }
+{
+        Y[i + 2] += a * X[i + 2];
+      }
+{
+        Y[i + 3] += a * X[i + 3];
+      }
+    }
   }
 }
 // Debug functions

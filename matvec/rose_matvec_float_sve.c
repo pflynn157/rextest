@@ -4,7 +4,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <malloc.h>
-#include <immintrin.h> 
+#include <arm_sve.h> 
 //#include <math.h>
 #define N_RUNS 20
 #define N 10240
@@ -32,23 +32,19 @@ void matvec_simd(float *matrix,float *vector,float *dest)
 {
   int j;
   for (int i = 0; i < 10240; i++) {
-    __m512 __part0 = _mm512_setzero_ps();
+    svfloat32_t __part0 = svdup_f32(0.00000L);
     float tmp = 0;
-    for (j = _lt_var_j; j <= (((10239 < (_lt_var_j + 2 - 1))?10239 : (_lt_var_j + 2 - 1))); j += 1 * 16) {
-      __m512 __vec1 = _mm512_loadu_ps(&matrix[i * 10240 + j]);
-      __m512 __vec2 = _mm512_loadu_ps(&vector[j]);
-      __m512 __vec3 = _mm512_mul_ps(__vec2,__vec1);
-      __m512 __vec4 = _mm512_add_ps(__vec3,__part0);
+    svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )10239);
+    for (j = 0; j <= 10239; j += 1 * svcntw()) {
+      svfloat32_t __vec1 = svld1(__pg0,&matrix[i * 10240 + j]);
+      svfloat32_t __vec2 = svld1(__pg0,&vector[j]);
+      svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
+      svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__part0);
       __part0 = (__vec4);
+      __pg0 = svwhilelt_b32((unsigned long )j,(unsigned long )10239);
     }
-    __m256 __buf0 = _mm512_extractf32x8_ps(__part0,0);
-    __m256 __buf1 = _mm512_extractf32x8_ps(__part0,1);
-    __buf1 = _mm256_add_ps(__buf0,__buf1);
-    __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-    __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-    float __buf2[8];
-    _mm256_storeu_ps(&__buf2,__buf1);
-    tmp += __buf2[0] + __buf2[6];
+    __pg0 = svptrue_b32();
+    tmp += svaddv(__pg0,__part0);
     dest[i] = tmp;
   }
 }

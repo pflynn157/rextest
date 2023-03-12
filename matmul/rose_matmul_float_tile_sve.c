@@ -9,7 +9,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <malloc.h>
-#include <immintrin.h> 
+#include <arm_sve.h> 
 #define N 1024
 //#define N 16
 // read timer in second
@@ -40,25 +40,21 @@ void matmul_simd(float **A,float **B,float **C)
   float temp;
   for (i = 0; i < 1024; i++) {
     for (j = 0; j < 1024; j++) {
-      __m512 __part0 = _mm512_setzero_ps();
+      svfloat32_t __part0 = svdup_f32(0.00000L);
       temp = 0;
-      for (k = _lt_var_k; k <= (((1023 < (_lt_var_k + 2 - 1))?1023 : (_lt_var_k + 2 - 1))); k += 1 * 16) {
+      svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((1023 < (_lt_var_k + 2 - 1))?1023 : (_lt_var_k + 2 - 1)));
+      for (k = _lt_var_k; k <= (((1023 < (_lt_var_k + 2 - 1))?1023 : (_lt_var_k + 2 - 1))); k += 1 * svcntw()) {
         float *__ptr1 = A[i];
-        __m512 __vec2 = _mm512_loadu_ps(&__ptr1[k]);
+        svfloat32_t __vec2 = svld1(__pg0,&__ptr1[k]);
         float *__ptr3 = B[j];
-        __m512 __vec4 = _mm512_loadu_ps(&__ptr3[k]);
-        __m512 __vec5 = _mm512_mul_ps(__vec4,__vec2);
-        __m512 __vec6 = _mm512_add_ps(__vec5,__part0);
+        svfloat32_t __vec4 = svld1(__pg0,&__ptr3[k]);
+        svfloat32_t __vec5 = svmul_f32_m(__pg0,__vec4,__vec2);
+        svfloat32_t __vec6 = svadd_f32_m(__pg0,__vec5,__part0);
         __part0 = (__vec6);
+        __pg0 = svwhilelt_b32((unsigned long )k,(unsigned long )(((1023 < (_lt_var_k + 2 - 1))?1023 : (_lt_var_k + 2 - 1))));
       }
-      __m256 __buf0 = _mm512_extractf32x8_ps(__part0,0);
-      __m256 __buf1 = _mm512_extractf32x8_ps(__part0,1);
-      __buf1 = _mm256_add_ps(__buf0,__buf1);
-      __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-      __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-      float __buf2[8];
-      _mm256_storeu_ps(&__buf2,__buf1);
-      temp += __buf2[0] + __buf2[6];
+      __pg0 = svptrue_b32();
+      temp += svaddv(__pg0,__part0);
       C[i][j] = temp;
     }
   }

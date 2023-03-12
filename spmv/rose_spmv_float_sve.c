@@ -5,7 +5,7 @@
 #include <string.h>
 // Add timing support
 #include <sys/timeb.h>
-#include <immintrin.h> 
+#include <arm_sve.h> 
 #define REAL float
 
 double read_timer()
@@ -104,28 +104,20 @@ int main(int argc,char *argv[])
     x[i] = 1.0;
   double elapsed = read_timer();
   for (row = 0; row < nrows; row++) {
-    __m512 __part0 = _mm512_setzero_ps();
+    svfloat32_t __part0 = svdup_f32(0.00000L);
     float sum = 0.0;
-    __mmask16 __mask0;
-    __mmask16 __mask1;
-    __mmask16 __mask2 = _kxnor_mask16(__mask0,__mask1);
-    __m512 __buf0 = _mm512_setzero_ps();
-    for (idx = _lt_var_idx; idx <= (((ia[row + 1] - 1 < (_lt_var_idx + 2 - 1))?(ia[row + 1] - 1) : (_lt_var_idx + 2 - 1))); idx += 1 * 16) {
-      __m512 __vec1 = _mm512_loadu_ps(&a[idx]);
-      __m512i __vindex0 = _mm512_loadu_si512((__m512i *)(&ja[idx]));
-      __m512 __vec2 = _mm512_mask_i32gather_ps(__buf0,__mask2,__vindex0,x,4);
-      __m512 __vec3 = _mm512_mul_ps(__vec2,__vec1);
-      __m512 __vec4 = _mm512_add_ps(__vec3,__part0);
+    svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )(ia[row + 1] - 1));
+    for (idx = ia[row]; idx <= (ia[row + 1] - 1); idx += 1 * svcntw()) {
+      svfloat32_t __vec1 = svld1(__pg0,&a[idx]);
+      svint32_t __vindex0 = svld1(__pg0,&ja[idx]);
+      svfloat32_t __vec2 = svld1_gather_index(__pg0,x,__vindex0);
+      svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
+      svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__part0);
       __part0 = (__vec4);
+      __pg0 = svwhilelt_b32((unsigned long )idx,(unsigned long )(ia[row + 1] - 1));
     }
-    __m256 __buf1 = _mm512_extractf32x8_ps(__part0,0);
-    __m256 __buf2 = _mm512_extractf32x8_ps(__part0,1);
-    __buf2 = _mm256_add_ps(__buf1,__buf2);
-    __buf2 = _mm256_hadd_ps(__buf2,__buf2);
-    __buf2 = _mm256_hadd_ps(__buf2,__buf2);
-    float __buf3[8];
-    _mm256_storeu_ps(&__buf3,__buf2);
-    sum += __buf3[0] + __buf3[6];
+    __pg0 = svptrue_b32();
+    sum += svaddv(__pg0,__part0);
     y[row] = sum;
   }
   elapsed = read_timer() - elapsed;

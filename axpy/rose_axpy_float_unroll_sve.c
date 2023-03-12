@@ -5,7 +5,7 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <malloc.h>
-#include <immintrin.h> 
+#include <arm_sve.h> 
 #define N_RUNS 20
 #define N 102400000
 // read timer in second
@@ -29,14 +29,34 @@ void init(float *X,float *Y)
 
 void axpy(float *X,float *Y,float a)
 {
-  __m512 __vec1 = _mm512_set1_ps(a);
+  svfloat32_t __vec16 = svdup_f32(a);
+  svfloat32_t __vec11 = svdup_f32(a);
+  svfloat32_t __vec6 = svdup_f32(a);
+  svfloat32_t __vec1 = svdup_f32(a);
   int i;
-  for (i = _lt_var_i; i <= (((102399999 < (_lt_var_i + 2 - 1))?102399999 : (_lt_var_i + 2 - 1))); i += 1 * 16) {
-    __m512 __vec0 = _mm512_loadu_ps(&Y[i]);
-    __m512 __vec2 = _mm512_loadu_ps(&X[i]);
-    __m512 __vec3 = _mm512_mul_ps(__vec2,__vec1);
-    __m512 __vec4 = _mm512_add_ps(__vec3,__vec0);
-    _mm512_storeu_ps(&Y[i],__vec4);
+  svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )102399999);
+  for (i = 0; i <= 102399999; i += 4 * svcntw()) {
+    svfloat32_t __vec0 = svld1(__pg0,&Y[i]);
+    svfloat32_t __vec2 = svld1(__pg0,&X[i]);
+    svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
+    svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__vec0);
+    svst1(__pg0,&Y[i],__vec4);
+    svfloat32_t __vec5 = svld1(__pg0,&Y[i + 1]);
+    svfloat32_t __vec7 = svld1(__pg0,&X[i + 1]);
+    svfloat32_t __vec8 = svmul_f32_m(__pg0,__vec7,__vec6);
+    svfloat32_t __vec9 = svadd_f32_m(__pg0,__vec8,__vec5);
+    svst1(__pg0,&Y[i + 1],__vec9);
+    svfloat32_t __vec10 = svld1(__pg0,&Y[i + 2]);
+    svfloat32_t __vec12 = svld1(__pg0,&X[i + 2]);
+    svfloat32_t __vec13 = svmul_f32_m(__pg0,__vec12,__vec11);
+    svfloat32_t __vec14 = svadd_f32_m(__pg0,__vec13,__vec10);
+    svst1(__pg0,&Y[i + 2],__vec14);
+    svfloat32_t __vec15 = svld1(__pg0,&Y[i + 3]);
+    svfloat32_t __vec17 = svld1(__pg0,&X[i + 3]);
+    svfloat32_t __vec18 = svmul_f32_m(__pg0,__vec17,__vec16);
+    svfloat32_t __vec19 = svadd_f32_m(__pg0,__vec18,__vec15);
+    svst1(__pg0,&Y[i + 3],__vec19);
+    __pg0 = svwhilelt_b32((unsigned long )i,(unsigned long )102399999);
   }
 }
 // Debug functions
