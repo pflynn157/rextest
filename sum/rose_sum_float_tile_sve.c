@@ -28,18 +28,24 @@ void init(float *X)
 
 float sum(float *X)
 {
-  svfloat32_t __part0 = svdup_f32(0.00000L);
   int i;
   float result = 0;
-  svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1)));
-  for (i = _lt_var_i; i <= (((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1))); i += 1 * svcntw()) {
-    svfloat32_t __vec1 = svld1(__pg0,&X[i]);
-    svfloat32_t __vec2 = svadd_f32_m(__pg0,__vec1,__part0);
-    __part0 = (__vec2);
-    __pg0 = svwhilelt_b32((unsigned long )i,(unsigned long )(((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1))));
+{
+    int _lt_var_inc = 1;
+    int _lt_var_i;
+    for (_lt_var_i = 0; _lt_var_i <= 10239999; _lt_var_i += _lt_var_inc * 2) {
+      svfloat32_t __part0 = svdup_f32(0.00000L);
+      svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((10239999 < (_lt_var_i + _lt_var_inc * 2 - 1))?10239999 : (_lt_var_i + _lt_var_inc * 2 - 1)));
+      for (i = _lt_var_i; i <= (((10239999 < (_lt_var_i + _lt_var_inc * 2 - 1))?10239999 : (_lt_var_i + _lt_var_inc * 2 - 1))); i += 1 * svcntw()) {
+        svfloat32_t __vec1 = svld1(__pg0,&X[i]);
+        svfloat32_t __vec2 = svadd_f32_m(__pg0,__vec1,__part0);
+        __part0 = (__vec2);
+        __pg0 = svwhilelt_b32((unsigned long )i,(unsigned long )(((10239999 < (_lt_var_i + _lt_var_inc * 2 - 1))?10239999 : (_lt_var_i + _lt_var_inc * 2 - 1))));
+      }
+      __pg0 = svptrue_b32();
+      result += svaddv(__pg0,__part0);
+    }
   }
-  __pg0 = svptrue_b32();
-  result += svaddv(__pg0,__part0);
   return result;
 }
 // Debug functions

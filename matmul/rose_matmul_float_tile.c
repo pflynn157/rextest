@@ -40,25 +40,31 @@ void matmul_simd(float **A,float **B,float **C)
   float temp;
   for (i = 0; i < 1024; i++) {
     for (j = 0; j < 1024; j++) {
-      __m512 __part0 = _mm512_setzero_ps();
       temp = 0;
-      for (k = _lt_var_k; k <= (((1023 < (_lt_var_k + 2 - 1))?1023 : (_lt_var_k + 2 - 1))); k += 1 * 16) {
-        float *__ptr1 = A[i];
-        __m512 __vec2 = _mm512_loadu_ps(&__ptr1[k]);
-        float *__ptr3 = B[j];
-        __m512 __vec4 = _mm512_loadu_ps(&__ptr3[k]);
-        __m512 __vec5 = _mm512_mul_ps(__vec4,__vec2);
-        __m512 __vec6 = _mm512_add_ps(__vec5,__part0);
-        __part0 = (__vec6);
+{
+        int _lt_var_inc = 1;
+        int _lt_var_k;
+        for (_lt_var_k = 0; _lt_var_k <= 1023; _lt_var_k += _lt_var_inc * 2) {
+          __m512 __part0 = _mm512_setzero_ps();
+          for (k = _lt_var_k; k <= (((1023 < (_lt_var_k + _lt_var_inc * 2 - 1))?1023 : (_lt_var_k + _lt_var_inc * 2 - 1))); k += 1 * 16) {
+            float *__ptr1 = A[i];
+            __m512 __vec2 = _mm512_loadu_ps(&__ptr1[k]);
+            float *__ptr3 = B[j];
+            __m512 __vec4 = _mm512_loadu_ps(&__ptr3[k]);
+            __m512 __vec5 = _mm512_mul_ps(__vec4,__vec2);
+            __m512 __vec6 = _mm512_add_ps(__vec5,__part0);
+            __part0 = (__vec6);
+          }
+          __m256 __buf0 = _mm512_extractf32x8_ps(__part0,0);
+          __m256 __buf1 = _mm512_extractf32x8_ps(__part0,1);
+          __buf1 = _mm256_add_ps(__buf0,__buf1);
+          __buf1 = _mm256_hadd_ps(__buf1,__buf1);
+          __buf1 = _mm256_hadd_ps(__buf1,__buf1);
+          float __buf2[8];
+          _mm256_storeu_ps(&__buf2,__buf1);
+          temp += __buf2[0] + __buf2[6];
+        }
       }
-      __m256 __buf0 = _mm512_extractf32x8_ps(__part0,0);
-      __m256 __buf1 = _mm512_extractf32x8_ps(__part0,1);
-      __buf1 = _mm256_add_ps(__buf0,__buf1);
-      __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-      __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-      float __buf2[8];
-      _mm256_storeu_ps(&__buf2,__buf1);
-      temp += __buf2[0] + __buf2[6];
       C[i][j] = temp;
     }
   }

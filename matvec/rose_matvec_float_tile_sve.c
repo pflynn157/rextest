@@ -32,19 +32,25 @@ void matvec_simd(float *matrix,float *vector,float *dest)
 {
   int j;
   for (int i = 0; i < 10240; i++) {
-    svfloat32_t __part0 = svdup_f32(0.00000L);
     float tmp = 0;
-    svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((10239 < (_lt_var_j + 2 - 1))?10239 : (_lt_var_j + 2 - 1)));
-    for (j = _lt_var_j; j <= (((10239 < (_lt_var_j + 2 - 1))?10239 : (_lt_var_j + 2 - 1))); j += 1 * svcntw()) {
-      svfloat32_t __vec1 = svld1(__pg0,&matrix[i * 10240 + j]);
-      svfloat32_t __vec2 = svld1(__pg0,&vector[j]);
-      svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
-      svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__part0);
-      __part0 = (__vec4);
-      __pg0 = svwhilelt_b32((unsigned long )j,(unsigned long )(((10239 < (_lt_var_j + 2 - 1))?10239 : (_lt_var_j + 2 - 1))));
+{
+      int _lt_var_inc = 1;
+      int _lt_var_j;
+      for (_lt_var_j = 0; _lt_var_j <= 10239; _lt_var_j += _lt_var_inc * 2) {
+        svfloat32_t __part0 = svdup_f32(0.00000L);
+        svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((10239 < (_lt_var_j + _lt_var_inc * 2 - 1))?10239 : (_lt_var_j + _lt_var_inc * 2 - 1)));
+        for (j = _lt_var_j; j <= (((10239 < (_lt_var_j + _lt_var_inc * 2 - 1))?10239 : (_lt_var_j + _lt_var_inc * 2 - 1))); j += 1 * svcntw()) {
+          svfloat32_t __vec1 = svld1(__pg0,&matrix[i * 10240 + j]);
+          svfloat32_t __vec2 = svld1(__pg0,&vector[j]);
+          svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
+          svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__part0);
+          __part0 = (__vec4);
+          __pg0 = svwhilelt_b32((unsigned long )j,(unsigned long )(((10239 < (_lt_var_j + _lt_var_inc * 2 - 1))?10239 : (_lt_var_j + _lt_var_inc * 2 - 1))));
+        }
+        __pg0 = svptrue_b32();
+        tmp += svaddv(__pg0,__part0);
+      }
     }
-    __pg0 = svptrue_b32();
-    tmp += svaddv(__pg0,__part0);
     dest[i] = tmp;
   }
 }

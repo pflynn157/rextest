@@ -29,16 +29,22 @@ void init(float *X,float *Y)
 
 void axpy(float *X,float *Y,float a)
 {
-  svfloat32_t __vec1 = svdup_f32(a);
   int i;
-  svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((102399999 < (_lt_var_i + 2 - 1))?102399999 : (_lt_var_i + 2 - 1)));
-  for (i = _lt_var_i; i <= (((102399999 < (_lt_var_i + 2 - 1))?102399999 : (_lt_var_i + 2 - 1))); i += 1 * svcntw()) {
-    svfloat32_t __vec0 = svld1(__pg0,&Y[i]);
-    svfloat32_t __vec2 = svld1(__pg0,&X[i]);
-    svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
-    svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__vec0);
-    svst1(__pg0,&Y[i],__vec4);
-    __pg0 = svwhilelt_b32((unsigned long )i,(unsigned long )(((102399999 < (_lt_var_i + 2 - 1))?102399999 : (_lt_var_i + 2 - 1))));
+{
+    int _lt_var_inc = 1;
+    int _lt_var_i;
+    for (_lt_var_i = 0; _lt_var_i <= 102399999; _lt_var_i += _lt_var_inc * 2) {
+      svfloat32_t __vec1 = svdup_f32(a);
+      svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((102399999 < (_lt_var_i + _lt_var_inc * 2 - 1))?102399999 : (_lt_var_i + _lt_var_inc * 2 - 1)));
+      for (i = _lt_var_i; i <= (((102399999 < (_lt_var_i + _lt_var_inc * 2 - 1))?102399999 : (_lt_var_i + _lt_var_inc * 2 - 1))); i += 1 * svcntw()) {
+        svfloat32_t __vec0 = svld1(__pg0,&Y[i]);
+        svfloat32_t __vec2 = svld1(__pg0,&X[i]);
+        svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
+        svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__vec0);
+        svst1(__pg0,&Y[i],__vec4);
+        __pg0 = svwhilelt_b32((unsigned long )i,(unsigned long )(((102399999 < (_lt_var_i + _lt_var_inc * 2 - 1))?102399999 : (_lt_var_i + _lt_var_inc * 2 - 1))));
+      }
+    }
   }
 }
 // Debug functions

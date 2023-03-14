@@ -104,20 +104,26 @@ int main(int argc,char *argv[])
     x[i] = 1.0;
   double elapsed = read_timer();
   for (row = 0; row < nrows; row++) {
-    svfloat32_t __part0 = svdup_f32(0.00000L);
     float sum = 0.0;
-    svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((ia[row + 1] - 1 < (_lt_var_idx + 2 - 1))?(ia[row + 1] - 1) : (_lt_var_idx + 2 - 1)));
-    for (idx = _lt_var_idx; idx <= (((ia[row + 1] - 1 < (_lt_var_idx + 2 - 1))?(ia[row + 1] - 1) : (_lt_var_idx + 2 - 1))); idx += 1 * svcntw()) {
-      svfloat32_t __vec1 = svld1(__pg0,&a[idx]);
-      svint32_t __vindex0 = svld1(__pg0,&ja[idx]);
-      svfloat32_t __vec2 = svld1_gather_index(__pg0,x,__vindex0);
-      svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
-      svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__part0);
-      __part0 = (__vec4);
-      __pg0 = svwhilelt_b32((unsigned long )idx,(unsigned long )(((ia[row + 1] - 1 < (_lt_var_idx + 2 - 1))?(ia[row + 1] - 1) : (_lt_var_idx + 2 - 1))));
+{
+      int _lt_var_inc = 1;
+      int _lt_var_idx;
+      for (_lt_var_idx = ia[row]; _lt_var_idx <= ia[row + 1] - 1; _lt_var_idx += _lt_var_inc * 2) {
+        svfloat32_t __part0 = svdup_f32(0.00000L);
+        svbool_t __pg0 = svwhilelt_b32((unsigned long )0,(unsigned long )((ia[row + 1] - 1 < (_lt_var_idx + _lt_var_inc * 2 - 1))?(ia[row + 1] - 1) : (_lt_var_idx + _lt_var_inc * 2 - 1)));
+        for (idx = _lt_var_idx; idx <= (((ia[row + 1] - 1 < (_lt_var_idx + _lt_var_inc * 2 - 1))?(ia[row + 1] - 1) : (_lt_var_idx + _lt_var_inc * 2 - 1))); idx += 1 * svcntw()) {
+          svfloat32_t __vec1 = svld1(__pg0,&a[idx]);
+          svint32_t __vindex0 = svld1(__pg0,&ja[idx]);
+          svfloat32_t __vec2 = svld1_gather_index(__pg0,x,__vindex0);
+          svfloat32_t __vec3 = svmul_f32_m(__pg0,__vec2,__vec1);
+          svfloat32_t __vec4 = svadd_f32_m(__pg0,__vec3,__part0);
+          __part0 = (__vec4);
+          __pg0 = svwhilelt_b32((unsigned long )idx,(unsigned long )(((ia[row + 1] - 1 < (_lt_var_idx + _lt_var_inc * 2 - 1))?(ia[row + 1] - 1) : (_lt_var_idx + _lt_var_inc * 2 - 1))));
+        }
+        __pg0 = svptrue_b32();
+        sum += svaddv(__pg0,__part0);
+      }
     }
-    __pg0 = svptrue_b32();
-    sum += svaddv(__pg0,__part0);
     y[row] = sum;
   }
   elapsed = read_timer() - elapsed;

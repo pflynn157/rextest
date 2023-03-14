@@ -28,22 +28,28 @@ void init(float *X)
 
 float sum(float *X)
 {
-  __m512 __part0 = _mm512_setzero_ps();
   int i;
   float result = 0;
-  for (i = _lt_var_i; i <= (((10239999 < (_lt_var_i + 2 - 1))?10239999 : (_lt_var_i + 2 - 1))); i += 1 * 16) {
-    __m512 __vec1 = _mm512_loadu_ps(&X[i]);
-    __m512 __vec2 = _mm512_add_ps(__vec1,__part0);
-    __part0 = (__vec2);
+{
+    int _lt_var_inc = 1;
+    int _lt_var_i;
+    for (_lt_var_i = 0; _lt_var_i <= 10239999; _lt_var_i += _lt_var_inc * 2) {
+      __m512 __part0 = _mm512_setzero_ps();
+      for (i = _lt_var_i; i <= (((10239999 < (_lt_var_i + _lt_var_inc * 2 - 1))?10239999 : (_lt_var_i + _lt_var_inc * 2 - 1))); i += 1 * 16) {
+        __m512 __vec1 = _mm512_loadu_ps(&X[i]);
+        __m512 __vec2 = _mm512_add_ps(__vec1,__part0);
+        __part0 = (__vec2);
+      }
+      __m256 __buf0 = _mm512_extractf32x8_ps(__part0,0);
+      __m256 __buf1 = _mm512_extractf32x8_ps(__part0,1);
+      __buf1 = _mm256_add_ps(__buf0,__buf1);
+      __buf1 = _mm256_hadd_ps(__buf1,__buf1);
+      __buf1 = _mm256_hadd_ps(__buf1,__buf1);
+      float __buf2[8];
+      _mm256_storeu_ps(&__buf2,__buf1);
+      result += __buf2[0] + __buf2[6];
+    }
   }
-  __m256 __buf0 = _mm512_extractf32x8_ps(__part0,0);
-  __m256 __buf1 = _mm512_extractf32x8_ps(__part0,1);
-  __buf1 = _mm256_add_ps(__buf0,__buf1);
-  __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-  __buf1 = _mm256_hadd_ps(__buf1,__buf1);
-  float __buf2[8];
-  _mm256_storeu_ps(&__buf2,__buf1);
-  result += __buf2[0] + __buf2[6];
   return result;
 }
 // Debug functions
