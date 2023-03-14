@@ -22,10 +22,10 @@ def build_tests(flags1, flags2, is_arm = False):
         # The OpenMP programs
         items.append((f + "_float.c", f + "1", "clang", flags1))
         items.append((f + "_float.c", f + "2", "clang", flags2))
-        items.append((f + "_float_unroll.c", f + "u1", "clang", flags1))
-        items.append((f + "_float_unroll.c", f + "u2", "clang", flags2))
-        items.append((f + "_float_tile.c", f + "t1", "clang", flags1))
-        items.append((f + "_float_tile.c", f + "t2", "clang", flags2))
+        #items.append((f + "_float_unroll.c", f + "u1", "clang", flags1))
+        #items.append((f + "_float_unroll.c", f + "u2", "clang", flags2))
+        #items.append((f + "_float_tile.c", f + "t1", "clang", flags1))
+        #items.append((f + "_float_tile.c", f + "t2", "clang", flags2))
         
         # Compile the Rose programs
         if is_arm:
