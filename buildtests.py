@@ -29,12 +29,12 @@ def build_tests(flags1, flags2, is_arm = False):
         
         # Compile the Rose programs
         if is_arm:
-            items.append(("rose_" + f + "_float.c", f + "_rex1", "clang", flags1))
-            items.append(("rose_" + f + "_float.c", f + "_rex2", "clang", flags2))
-            items.append(("rose_" + f + "_float_unroll.c", f + "_rex1_unroll", "clang", flags1))
-            items.append(("rose_" + f + "_float_unroll.c", f + "_rex2_unroll", "clang", flags2))
-            items.append(("rose_" + f + "_float_tile.c", f + "_rex1_tile", "clang", flags1))
-            items.append(("rose_" + f + "_float_tile.c", f + "_rex2_tile", "clang", flags2))
+            items.append(("rose_" + f + "_float_sve.c", f + "_rex1", "clang", flags1))
+            items.append(("rose_" + f + "_float_sve.c", f + "_rex2", "clang", flags2))
+            items.append(("rose_" + f + "_float_unroll_sve.c", f + "_rex1_unroll", "clang", flags1))
+            items.append(("rose_" + f + "_float_unroll_sve.c", f + "_rex2_unroll", "clang", flags2))
+            items.append(("rose_" + f + "_float_tile_sve.c", f + "_rex1_tile", "clang", flags1))
+            items.append(("rose_" + f + "_float_tile_sve.c", f + "_rex2_tile", "clang", flags2))
         else:
             items.append(("rose_" + f + "_float.c", f + "_rex1", "clang", flags1))
             items.append(("rose_" + f + "_float.c", f + "_rex2", "clang", flags2))
