@@ -3,8 +3,10 @@
 from subprocess import Popen, PIPE
 import csv
 import os
+import sys
 
 base_folders = [ "axpy", "sum", "matmul", "matvec", "spmv" ]
+#base_folders = ["axpy"]
 folders = list()
 
 for folder in base_folders:
@@ -26,28 +28,10 @@ for folder in base_folders:
     items.append((folder + " (Rex w/Tile (AVX-512))", "./build/" + folder + "_rex2_tile", []))
     folders.append((folder, items))
 
-'''
-folders = [
-    #("sum",
-    #    [
-    #    ("Sum (Serial)", "./sum_serial", [])
-    #    ]
-    #),
-    ("axpy",
-        [
-        ("AXPY (Serial)",               "./build/axpy_serial", []),
-        ("AXPY (Autovec (AVX-2))",      "./build/axpy_autovec1", []),
-        ("AXPY (Autovec (AVX-512))",    "./build/axpy_autovec2", []),
-        ("AXPY (OpenMP (AVX-2))",       "./build/axpy1", []),
-        ("AXPY (OpenMP (AVX-512))",     "./build/axpy2", []),
-        ("AXPY (Rex (AVX-512))",        "./build/axpy_rex_avx2", []),
-        ("AXPY (Rex (AVX-512))",        "./build/axpy_rex_avx512", []),
-        ]
-    )
-]
-'''
 
 output_file = "results.csv"
+if len(sys.argv) > 1:
+    output_file = "results_" + str(sys.argv[1]) + ".csv"
 max_count = 10
 #max_count = 2
 
