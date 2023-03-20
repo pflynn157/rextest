@@ -5,8 +5,8 @@ import csv
 import os
 import sys
 
-base_folders = [ "axpy", "sum", "matmul", "matvec", "spmv" ]
-#base_folders = ["axpy"]
+#base_folders = [ "axpy", "sum", "matmul", "matvec", "spmv" ]
+base_folders = ["spmv"]
 folders = list()
 
 for folder in base_folders:
