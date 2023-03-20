@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 			++errors;
 		}
     }
-    //printf("Errors: %d\n", errors);
+    fprintf(stderr, "Errors: %d\n", errors);
     
     printf("%.4f", elapsed);
     
