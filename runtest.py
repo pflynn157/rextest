@@ -32,8 +32,8 @@ for folder in base_folders:
 output_file = "results.csv"
 if len(sys.argv) > 1:
     output_file = "results_" + str(sys.argv[1]) + ".csv"
-max_count = 4
-#max_count = 10
+#max_count = 4
+max_count = 10
 
 for folder in folders:
     os.chdir(folder[0])
