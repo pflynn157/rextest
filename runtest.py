@@ -6,7 +6,7 @@ import os
 import sys
 
 #base_folders = [ "axpy", "sum", "matmul", "matvec", "spmv" ]
-base_folders = ["matmul", "matvec"]
+base_folders = ["spmv"]
 folders = list()
 
 for folder in base_folders:
@@ -32,7 +32,7 @@ for folder in base_folders:
 output_file = "results.csv"
 if len(sys.argv) > 1:
     output_file = "results_" + str(sys.argv[1]) + ".csv"
-max_count = 2
+max_count = 1
 #max_count = 10
 
 for folder in folders:
